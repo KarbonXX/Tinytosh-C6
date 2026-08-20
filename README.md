@@ -20,7 +20,7 @@ guide covers the changes needed for the C6 variant.
 | **USB serial** | Hardware UART over USB-CDC | **USB CDC On Boot must be Enabled** |
 | **Arduino core** | esp32 v2.x or v3.x | **esp32 v3.0.0+** (C6 support was incomplete before) |
 | **Web flasher manifest** | `manifest.json` (chipFamily: ESP32-C3) | `manifest_c6.json` (chipFamily: ESP32-C6) |
-| **First-flash procedure** | Just plug in | Hold **BOOT** while plugging in USB, release after ~2 s |
+| **First-flash procedure** | Just plug in | Just plug in (if no port appears, hold **BOOT** while plugging in USB, release after ~2 s) |
 | **Build flag** | none | `-DTINYTOSH_BOARD=XIAO_ESP32_C6` |
 
 ---
@@ -66,11 +66,14 @@ you're doing — the ⚠️ marker is a hint, not a wall.
    https://karbonxx.github.io/Tinytosh-C6/
    ```
 2. Plug your XIAO C6 into USB-C.
-3. **First-time flash only:** Hold the **BOOT** button on the XIAO while plugging in.
-   Release after ~2 seconds. (Subsequent flashes work without this.)
-4. Click **Connect & Flash XIAO ESP32-C6**.
-5. Pick the serial port that appears, click **Install**, wait ~60 seconds.
-6. Done — the OLED should show "Tinytosh is Ready".
+3. Click **Connect & Flash XIAO ESP32-C6**.
+4. Pick the serial port that appears, click **Install**, wait ~60 seconds.
+5. Done — the OLED should show "Tinytosh is Ready".
+
+> **First-flash procedure:** Just plug in. If the web installer can't see a
+> serial port on the first try, **hold the BOOT** button on the XIAO while
+> plugging in, then release after ~2 seconds. This forces the ROM bootloader.
+> Subsequent flashes work without this step.
 
 The web installer uses the [ESP Web Tools](https://esptool-js.github.io/esp-web-tools/)
 component, which talks directly to your browser's WebSerial API. No drivers
@@ -229,8 +232,8 @@ XIAO ESP32-C6** button will be live.
 |---|---|---|---|
 | VCC | red | **3V3** | Power, 3.3V only (not 5V) |
 | GND | black | **GND** | Share with TTP223 ground |
-| SCL | yellow | **D5** (GPIO 23) | I²C clock |
-| SDA | green | **D4** (GPIO 22) | I²C data |
+| SCL | yellow | **D10** (GPIO 18) | I²C clock |
+| SDA | green | **D9** (GPIO 20) | I²C data |
 
 **Optional TTP223 touch button:**
 

@@ -422,9 +422,9 @@ void setup() {
                               appState.config.scl_pin == BoardPins::C3_SCL_PIN &&
                               appState.config.touch_pin == BoardPins::C3_TOUCH_PIN);
   if (looksLikeFreshFlash) {
-    appState.config.sda_pin   = BoardPins::DEFAULT_SDA_PIN;   // D4
-    appState.config.scl_pin   = BoardPins::DEFAULT_SCL_PIN;   // D5
-    appState.config.touch_pin = BoardPins::DEFAULT_TOUCH_PIN; // D3
+    appState.config.sda_pin   = BoardPins::DEFAULT_SDA_PIN;   // D9  (GPIO20)
+    appState.config.scl_pin   = BoardPins::DEFAULT_SCL_PIN;   // D10 (GPIO18)
+    appState.config.touch_pin = BoardPins::DEFAULT_TOUCH_PIN; // D3  (GPIO21)
   }
 #endif
 

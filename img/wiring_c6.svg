@@ -1,15 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 480" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
   <rect width="1100" height="480" fill="#0d1117"/>
 
-  <!-- Title -->
   <text x="550" y="34" text-anchor="middle" fill="#58a6ff" font-size="24" font-weight="700">Tinytosh Wiring — XIAO ESP32-C6</text>
   <text x="550" y="56" text-anchor="middle" fill="#8b949e" font-size="13">OLED I²C display + optional TTP223 touch button</text>
-
-  <!-- ════════════════════════════════════════════ -->
-  <!-- COLUMN 1: OLED (x=60..220)                   -->
-  <!-- COLUMN 2: XIAO C6 (x=480..720)               -->
-  <!-- COLUMN 3: TTP223 (x=920..1080)               -->
-  <!-- ════════════════════════════════════════════ -->
 
   <!-- ===== OLED ===== -->
   <g transform="translate(60,140)">
@@ -18,7 +11,6 @@
     <text x="85" y="46" text-anchor="middle" fill="#22c55e" font-size="13" font-family="monospace">Tinytosh</text>
     <text x="85" y="62" text-anchor="middle" fill="#22c55e" font-size="9" font-family="monospace">--:--</text>
     <text x="85" y="95" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="600">0.96" OLED</text>
-    <!-- Pin pads (VCC, GND, SCL, SDA) -->
     <rect x="20"  y="113" width="20" height="14" fill="#1f2937" stroke="#6b7280"/>
     <rect x="55"  y="113" width="20" height="14" fill="#1f2937" stroke="#6b7280"/>
     <rect x="90"  y="113" width="20" height="14" fill="#1f2937" stroke="#6b7280"/>
@@ -29,10 +21,9 @@
     <text x="135" y="124" text-anchor="middle" fill="#34d399" font-size="9" font-weight="700">SDA</text>
   </g>
 
-  <!-- ===== XIAO ESP32-C6 ===== -->
-  <g transform="translate(480,100)">
-    <!-- PCB -->
-    <rect x="0" y="0" width="240" height="220" rx="12" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+  <!-- ===== XIAO ESP32-C6 (vertical pin strip on left, showing all 11 D-pins) ===== -->
+  <g transform="translate(480,80)">
+    <rect x="0" y="0" width="240" height="240" rx="12" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
     <rect x="180" y="65" width="55" height="22" rx="3" fill="#0d1117" stroke="#6b7280"/>
     <text x="207" y="80" text-anchor="middle" fill="#9ca3af" font-size="8">USB-C</text>
     <rect x="35" y="55" width="65" height="65" rx="3" fill="#111827" stroke="#6b7280"/>
@@ -43,26 +34,36 @@
     <circle cx="140" cy="125" r="3" fill="#fbbf24"/>
     <text x="120" y="155" text-anchor="middle" fill="#c9d1d9" font-size="13" font-weight="700">XIAO ESP32-C6</text>
 
-    <!-- Left pin header (D0..D5) -->
-    <g transform="translate(-8,60)">
-      <rect x="0" y="0"  width="8" height="10" fill="#1f2937" stroke="#9ca3af"/>
-      <rect x="0" y="16" width="8" height="10" fill="#1f2937" stroke="#9ca3af"/>
-      <rect x="0" y="32" width="8" height="10" fill="#1f2937" stroke="#9ca3af"/>
-      <rect x="0" y="48" width="8" height="10" fill="#1f2937" stroke="#60a5fa" stroke-width="1.8"/>
-      <rect x="0" y="64" width="8" height="10" fill="#1f2937" stroke="#34d399" stroke-width="1.8"/>
-      <rect x="0" y="80" width="8" height="10" fill="#1f2937" stroke="#fbbf24" stroke-width="1.8"/>
+    <!-- Pin header: D0..D10 — 11 pins -->
+    <g transform="translate(-8,30)">
+      <rect x="0" y="0"  width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="12" width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="24" width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="36" width="8" height="6" fill="#1f2937" stroke="#60a5fa" stroke-width="1.8"/>
+      <rect x="0" y="48" width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="60" width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="72" width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="84" width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="96" width="8" height="6" fill="#1f2937" stroke="#9ca3af"/>
+      <rect x="0" y="108" width="8" height="6" fill="#1f2937" stroke="#34d399" stroke-width="1.8"/>
+      <rect x="0" y="120" width="8" height="6" fill="#1f2937" stroke="#fbbf24" stroke-width="1.8"/>
     </g>
-    <g transform="translate(-44,60)" font-size="10" fill="#c9d1d9" text-anchor="end">
-      <text x="32" y="8">D0</text>
-      <text x="32" y="24">D1</text>
-      <text x="32" y="40">D2</text>
-      <text x="32" y="56" fill="#60a5fa" font-weight="700">D3 ★</text>
-      <text x="32" y="72" fill="#34d399" font-weight="700">D4 ●</text>
-      <text x="32" y="88" fill="#fbbf24" font-weight="700">D5 ●</text>
+    <g transform="translate(-44,30)" font-size="9" fill="#c9d1d9" text-anchor="end">
+      <text x="32" y="5">D0</text>
+      <text x="32" y="17">D1</text>
+      <text x="32" y="29">D2</text>
+      <text x="32" y="41" fill="#60a5fa" font-weight="700">D3 ★</text>
+      <text x="32" y="53">D4</text>
+      <text x="32" y="65">D5</text>
+      <text x="32" y="77">D6</text>
+      <text x="32" y="89">D7</text>
+      <text x="32" y="101">D8</text>
+      <text x="32" y="113" fill="#34d399" font-weight="700">D9 ●</text>
+      <text x="32" y="125" fill="#fbbf24" font-weight="700">D10 ●</text>
     </g>
 
-    <!-- Bottom power pins (3V3, GND, 5V) -->
-    <g transform="translate(75,200)">
+    <!-- Power pins at bottom -->
+    <g transform="translate(75,220)">
       <rect x="0"  y="0" width="10" height="10" fill="#1f2937" stroke="#f87171" stroke-width="1.5"/>
       <rect x="22" y="0" width="10" height="10" fill="#1f2937" stroke="#9ca3af" stroke-width="1.5"/>
       <rect x="44" y="0" width="10" height="10" fill="#1f2937" stroke="#9ca3af"/>
@@ -78,7 +79,6 @@
     <circle cx="65" cy="32" r="16" fill="#1f2937" stroke="#fbbf24" stroke-width="1.5"/>
     <text x="65" y="37" text-anchor="middle" fill="#fbbf24" font-size="12">⊕</text>
     <text x="65" y="78" text-anchor="middle" fill="#c9d1d9" font-size="10" font-weight="600">TTP223 (optional)</text>
-    <!-- Pin pads (VCC, GND, SIG) -->
     <rect x="20" y="103" width="14" height="14" fill="#1f2937" stroke="#6b7280"/>
     <rect x="48" y="103" width="14" height="14" fill="#1f2937" stroke="#6b7280"/>
     <rect x="76" y="103" width="14" height="14" fill="#1f2937" stroke="#6b7280"/>
@@ -87,43 +87,38 @@
     <text x="83" y="114" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="700">SIG</text>
   </g>
 
-  <!-- ════════════════════════════════════════════════════════════════ -->
-  <!-- WIRES - all horizontal, each in its own row, no crossings       -->
-  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- WIRES -->
+  <!-- SDA GREEN (OLED → XIAO D9=GPIO20) -->
+  <path d="M 195 267 L 472 220" stroke="#34d399" stroke-width="3" fill="none"/>
+  <rect x="220" y="226" width="180" height="20" rx="4" fill="#0d1117" stroke="#34d399"/>
+  <text x="310" y="241" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">SDA → D9 (GPIO20)</text>
 
-  <!-- Row 1: SDA GREEN (OLED → XIAO D9=GPIO20) -->
-  <path d="M 195 277 L 572 193" stroke="#34d399" stroke-width="3" fill="none"/>
-  <rect x="370" y="180" width="160" height="20" rx="4" fill="#0d1117" stroke="#34d399"/>
-  <text x="450" y="195" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">GREEN → SDA on D9</text>
+  <!-- SCL YELLOW (OLED → XIAO D10=GPIO18) -->
+  <path d="M 160 267 L 472 232" stroke="#fbbf24" stroke-width="3" fill="none"/>
+  <rect x="220" y="248" width="190" height="20" rx="4" fill="#0d1117" stroke="#fbbf24"/>
+  <text x="315" y="263" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="700">SCL → D10 (GPIO18)</text>
 
-  <!-- Row 2: SCL YELLOW (OLED → XIAO D10=GPIO18) -->
-  <path d="M 160 277 L 572 177" stroke="#fbbf24" stroke-width="3" fill="none"/>
-  <rect x="370" y="156" width="160" height="20" rx="4" fill="#0d1117" stroke="#fbbf24"/>
-  <text x="450" y="171" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="700">YELLOW → SCL on D10</text>
+  <!-- Touch SIG BLUE (TTP223 → XIAO D3=GPIO21) -->
+  <path d="M 900 287 L 472 198" stroke="#60a5fa" stroke-width="3" fill="none"/>
+  <rect x="650" y="278" width="200" height="20" rx="4" fill="#0d1117" stroke="#60a5fa"/>
+  <text x="750" y="293" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700">SIG → D3 (GPIO21) ★</text>
 
-  <!-- Row 3: Touch SIG BLUE (TTP223 → XIAO D3) -->
-  <path d="M 900 287 L 472 165" stroke="#60a5fa" stroke-width="3" fill="none"/>
-  <text x="700" y="270" fill="#60a5fa" font-size="12" font-weight="700">SIG → D3 (GPIO21) ★</text>
-
-  <!-- Row 4: VCC RED (OLED → XIAO 3V3) - via bottom -->
+  <!-- VCC RED (OLED → XIAO 3V3) -->
   <path d="M 90 277 C 90 360, 400 360, 555 315" stroke="#f87171" stroke-width="3" fill="none"/>
   <text x="220" y="356" fill="#f87171" font-size="12" font-weight="700">VCC → 3V3 power</text>
 
-  <!-- Row 5: GND BLACK (OLED → XIAO GND) - via bottom -->
+  <!-- GND BLACK (OLED → XIAO GND) -->
   <path d="M 125 277 C 125 380, 400 380, 577 315" stroke="#9ca3af" stroke-width="3" fill="none"/>
   <text x="220" y="378" fill="#c9d1d9" font-size="12" font-weight="700">GND → GND ground</text>
 
-  <!-- Row 6: TTP223 VCC (shares OLED VCC line) -->
+  <!-- TTP223 VCC + GND -->
   <path d="M 920 287 C 850 287, 700 340, 555 305" stroke="#7f1d1d" stroke-width="2.5" stroke-dasharray="5 3" fill="none"/>
-  <text x="660" y="335" fill="#f87171" font-size="11">TTP223 VCC → same 3V3 (just splice in)</text>
+  <text x="660" y="335" fill="#f87171" font-size="11">TTP223 VCC → same 3V3</text>
 
-  <!-- Row 7: TTP223 GND (shares OLED GND line) -->
   <path d="M 948 287 C 850 287, 700 400, 577 305" stroke="#4b5563" stroke-width="2.5" stroke-dasharray="5 3" fill="none"/>
-  <text x="660" y="395" fill="#9ca3af" font-size="11">TTP223 GND → same GND (just splice in)</text>
+  <text x="660" y="395" fill="#9ca3af" font-size="11">TTP223 GND → same GND</text>
 
-  <!-- ════════════════════════════════════════════════════════════════ -->
-  <!-- LEGEND at bottom                                              -->
-  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- LEGEND -->
   <g transform="translate(60,420)">
     <rect x="0" y="0" width="980" height="44" rx="6" fill="#161b22" stroke="#30363d"/>
     <text x="20" y="18" fill="#c9d1d9" font-size="11" font-weight="700">WIRE COLOR KEY</text>
@@ -132,7 +127,7 @@
       <tspan fill="#9ca3af" font-weight="700">  BLACK</tspan> = GND
       <tspan fill="#fbbf24" font-weight="700">  YELLOW</tspan> = SCL (I²C clock → D10/GPIO18)
       <tspan fill="#34d399" font-weight="700">  GREEN</tspan> = SDA (I²C data → D9/GPIO20)
-      <tspan fill="#60a5fa" font-weight="700">  BLUE</tspan> = Touch SIG → D3
+      <tspan fill="#60a5fa" font-weight="700">  BLUE</tspan> = Touch SIG → D3/GPIO21
     </text>
   </g>
 
