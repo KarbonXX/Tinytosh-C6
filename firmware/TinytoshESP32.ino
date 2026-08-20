@@ -2,6 +2,11 @@
 #include <WiFiManager.h>
 #include <ArduinoJson.h>
 #include <OneButton.h>
+#include <Preferences.h>
+
+// Global Preferences handle for our own WiFi cred backup namespace.
+// Defined at file scope so the lambda in setSaveConfigCallback can access it.
+Preferences g_wifi_prefs;
 
 #include "BoardConfig.h"
 #include "structs.h"
@@ -439,8 +444,22 @@ void setup() {
   wm.setConfigPortalBlocking(true);
 
   // Callback fired AFTER WiFiManager has written creds to NVS — confirms save happened
+  // We use this hook to ALSO save the creds into our own Preferences namespace as a
+  // backup, because WiFiManager's reliance on esp_wifi_set_config() persistence is
+  // broken/unreliable across ESP32 Arduino Core v3.x reboot cycles.
   wm.setSaveConfigCallback([]() {
-    Serial.println("✓ WiFiManager: credentials saved to NVS.");
+    String ssid = WiFi.SSID();
+    String pass = WiFi.psk();
+    if (ssid.length() > 0) {
+      // The WiFi driver already has these in its in-memory config; we mirror them
+      // into our own NVS namespace for guaranteed persistence.
+      extern Preferences g_wifi_prefs;
+      g_wifi_prefs.begin("tinytosh_wifi", false);
+      g_wifi_prefs.putString("ssid", ssid);
+      g_wifi_prefs.putString("pass", pass);
+      g_wifi_prefs.end();
+      Serial.printf("✓ WiFiManager: credentials saved to NVS (SSID=\"%s\").\n", ssid.c_str());
+    }
   });
 
   wm.setAPCallback([](WiFiManager* m) {
@@ -448,6 +467,27 @@ void setup() {
   });
 
   displayService.showOLEDStatus({"\n", "\n", "Connecting...", "\n", "\n", "Searching WiFi..."}, true);
+
+  // Restore WiFi creds from our own NVS backup if present.
+  // WiFiManager's own esp_wifi_set_config persistence is unreliable on
+  // ESP32 Arduino Core v3.x across hard reboots, so we keep our own copy
+  // and explicitly re-feed it to WiFi via WiFi.begin() before WiFiManager's
+  // autoConnect() — this is the path that actually writes to NVS reliably.
+  g_wifi_prefs.begin("tinytosh_wifi", true);  // read-only
+  String saved_ssid = g_wifi_prefs.getString("ssid", "");
+  String saved_pass = g_wifi_prefs.getString("pass", "");
+  g_wifi_prefs.end();
+
+  if (saved_ssid.length() > 0) {
+    Serial.printf("Restoring WiFi creds from backup: SSID=\"%s\"\n", saved_ssid.c_str());
+    // Pre-load creds into the WiFi driver. With WiFi.persistent at its default
+    // (true on ESP32 v3.x), WiFi.begin() writes the config to NVS so it
+    // survives the next reboot even if WiFiManager's own save flow is broken.
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(saved_ssid.c_str(), saved_pass.c_str());
+    // Don't wait for connect — WiFiManager.autoConnect() will manage that.
+    delay(100);
+  }
 
   if (wm.autoConnect(AP_SSID, AP_PASS)) {
     String ipAddress = WiFi.localIP().toString();
