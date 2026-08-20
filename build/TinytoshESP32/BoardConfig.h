@@ -44,12 +44,20 @@ namespace BoardPins {
   constexpr const char* BOARD_ID   = "xiao_esp32_c6";
 
   // XIAO C6 D0..D10 silkscreen labels (indexed by GPIO number, "" if unused)
-  // GPIO 0..30
+  // Per Seeed XIAO ESP32-C6 schematic + pins_arduino.h:
+  //   GPIO  0 → D0,   GPIO  1 → D1,   GPIO  2 → D2,
+  //   GPIO 21 → D3,   GPIO 22 → D4,  GPIO 23 → D5,
+  //   GPIO 16 → D6,   GPIO 17 → D7,  GPIO 19 → D8 (SCK, flash),
+  //   GPIO 20 → D9,   GPIO 18 → D10 (MOSI, flash)
   constexpr const char* SILKSCREEN[] = {
-      "D0",  "D1",  "D2",  "",    "",    "",    "",    "",     // 0..7
-      "",    "",    "",    "D3",  "D4",  "D5",  "",    "",     // 8..15
-      "D6",  "D7",  "",    "",    "D9",  "D10", "",    "",     // 16..23
-      "",    "",    "",    "",    "",    "",    "",    ""      // 24..31
+      //  0    1    2    3    4    5    6    7
+      "D0", "D1", "D2", "",   "",   "",   "",   "",
+      //  8    9   10   11   12   13   14   15
+      "",   "",  "",   "",   "",   "",   "",   "",
+      // 16   17   18   19   20   21   22   23
+      "D6", "D7", "D10","D8", "D9", "D3", "D4", "D5",
+      // 24..31
+      "",   "",   "",   "",   "",   "",   "",   ""
   };
 
 #else  // ESP32_C3 (default)
