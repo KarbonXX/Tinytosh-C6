@@ -61,8 +61,9 @@ you're doing — the ⚠️ marker is a hint, not a wall.
 ## Option A — Web Flasher (easiest)
 
 1. Open the GitHub Pages site for this branch:
+
    ```
-   https://<your-gh-user>.github.io/Tinytosh-C6/
+   https://karbonxx.github.io/Tinytosh-C6/
    ```
 2. Plug your XIAO C6 into USB-C.
 3. **First-time flash only:** Hold the **BOOT** button on the XIAO while plugging in.
