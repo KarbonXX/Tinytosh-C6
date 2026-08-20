@@ -578,7 +578,7 @@ void WebServerService::handleRoot() {
   add("</div>");
   add("<div style='display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 20px;'>");
   add("  <button type='submit'>💾 Save &amp; Apply All Settings</button>");
-  add("  <button type='button' onclick=\"if(confirm('�️ This will erase ALL settings (including WiFi) and reboot Tinytosh into setup mode. Continue?')){fetch('/api/reset',{method:'POST'}).then(()=>{document.body.innerHTML='<h2 style=\"text-align:center;margin-top:40px\">🔄 Resetting... reconnect to the Tinytosh WiFi in 10 seconds.</h2>';});}\" style='background: var(--card); color: #f87171; border: 1px solid #f87171;'>🔄 Reset &amp; Forget WiFi</button>");
+  add("  <button type='button' id='resetBtn' style='background: var(--card); color: #f87171; border: 1px solid #f87171;'>🔄 Reset &amp; Forget WiFi</button>");
   add("</div>");
   add("</form>");
   
@@ -1003,9 +1003,27 @@ void WebServerService::handleRoot() {
   add("    set('bambu-temps', 'Nozzle: ' + parseFloat(d.bambu_nozzle).toFixed(1) + '/' + parseFloat(d.bambu_nozzle_target).toFixed(1) + '<br>Bed: ' + parseFloat(d.bambu_bed).toFixed(1) + '/' + parseFloat(d.bambu_bed_target).toFixed(1), true);");
   add("    set('bambu-fans', 'Part: ' + d.bambu_fan_part + ' | Aux: ' + d.bambu_fan_aux);");
   add("  } else { hide('bambu-no-data', false); hide('bambu-grid', true); }");
-  
+
   add("  if (d.pc_status !== undefined) set('pc-link-status', d.pc_status);");
   add("}).catch(e => console.log('Sync error:', e)); } setInterval(updateData, 15000); updateData();");
+
+  // Reset & Forget WiFi button handler — clean implementation, no innerHTML tricks
+  add("document.getElementById('resetBtn')?.addEventListener('click', function() {");
+  add("  if (!confirm('This will erase ALL settings (including WiFi) and reboot Tinytosh into setup mode. Continue?')) return;");
+  add("  fetch('/api/reset', { method: 'POST' })");
+  add("    .then(r => r.text())");
+  add("    .then(msg => {");
+  add("      document.body.innerHTML = '';");
+  add("      var h = document.createElement('h2');");
+  add("      h.style.textAlign = 'center';");
+  add("      h.style.marginTop = '40px';");
+  add("      h.style.color = '#22c55e';");
+  add("      h.textContent = '🔄 Resetting... reconnect to the Tinytosh WiFi network in 10 seconds.';");
+  add("      document.body.appendChild(h);");
+  add("    })");
+  add("    .catch(e => alert('Reset failed: ' + e));");
+  add("});");
+
   add("</script></div></body></html>");
 
   if (chunk.length() > 0) {
