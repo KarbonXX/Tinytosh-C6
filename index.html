@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tinytosh Setup | Guide — XIAO ESP32-C6</title>
+        <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+
+        <div class="wrapper">
+            <header>
+                <h1>Tinytosh <span style="font-size: 0.45em; vertical-align: middle; background: var(--accent); color: var(--bg); padding: 4px 10px; border-radius: 999px; margin-left: 8px; white-space: nowrap;">XIAO ESP32-C6</span></h1>
+                <p class="intro">
+                    Meet <strong>Tinytosh</strong>: The ultimate open-source <strong>desktop companion</strong> that brings your workspace to life. Whether functioning as a standalone smart display or a real-time PC hardware monitor, it delivers critical data at a glance. Best of all, it relies on <strong>100% free public APIs</strong> — no API keys, no accounts, and no authorization required.
+                </p>
+                <p class="intro" style="margin-top: -10px; font-size: 0.9em; opacity: 0.85;">
+                    📌 This is the <strong>Seeed XIAO ESP32-C6</strong> variant of the Tinytosh setup guide. Looking for the original <a href="https://vladimirgitsarev.github.io/Tinytosh/">ESP32-C3 guide</a>?
+                </p>
+
+                <div class="carousel-wrapper" id="carouselWrapper">
+                    <button class="carousel-btn prev" id="prevBtn">❮</button>
+                    <div class="carousel-track" id="track"></div>
+                    <button class="carousel-btn next" id="nextBtn">❯</button>
+                </div>
+
+                <div class="info-box flex-row" style="margin-top: 25px; align-items: flex-start; flex-direction: column;">
+                    <h3 style="margin: 0 0 10px 0; color: var(--accent);">Available Screens & Services</h3>
+                    <ul class="screens-list">
+                        <li>🕒 <a href="#screen-clock"><strong>Internet Clock:</strong></a> Auto-syncs time and date based on your location.</li>
+                        <li>📅 <a href="#screen-calendar"><strong>Calendar:</strong></a> Displays the current date, monthly grid, and national holidays.</li>
+                        <li>🌤️ <a href="#screen-weather"><strong>Weather Station:</strong></a> Live Temperature, Humidity, and Forecasts (via Open-Meteo).</li>
+                        <li>🍃 <a href="#screen-aqi"><strong>Air Quality:</strong></a> Monitor local AQI levels (US & EU Standards).</li>
+                        <li>☀️ <a href="#screen-daylight"><strong>Daylight Info:</strong></a> Tracks sunrise, sunset, solar noon, and day length.</li>
+                        <li>📊 <a href="#screen-stock"><strong>Stock Tracker:</strong></a> Track market data for up to 5 global assets and ETFs at once.</li>
+                        <li>📈 <a href="#screen-crypto"><strong>Crypto Tracker:</strong></a> Track up to 5 top global cryptos with price and trend indicators.</li>
+                        <li>💱 <a href="#screen-currency"><strong>Currency Tracker:</strong></a> Track exchange rates for up to 5 fiat currency pairs with custom multipliers.</li>
+                        <li>🖥️ <a href="#screen-pc"><strong>PC Hardware Monitor:</strong></a> Connects via USB or Wirelessly to your computer to show CPU Load, RAM, and Network Speeds!</li>
+                        <li>🎵 <a href="#screen-media"><strong>PC Media:</strong></a> Displays currently playing track, artist, album, and playback status from your connected computer.</li>
+                        <li>🖨️ <a href="#screen-bambu"><strong>Bambu 3D Printer:</strong></a> Local network telemetry for your Bambu Lab printer (progress, temperatures, fans, and print status).</li>
+                    </ul>
+                </div>
+            </header>
+
+            <section>
+                <h2>Step 1: Hardware & Wiring</h2>
+                <div class="step">
+                    <h3>Components Required</h3>
+                    <ul class="wiring-list" style="margin-bottom: 20px;">
+                        <li><strong>ESP32-C3 SuperMini</strong> (Microcontroller)</li>
+                        <li><strong>0.96" OLED Display</strong> (I2C 128x64)</li>
+                        <li><strong>Silicone Wires</strong> (30AWG recommended) or Jumper Wires</li>
+                        <li><strong>TTP223 Touch Sensor</strong> (Optional, for button)</li>
+                    </ul>
+
+                    <div class="hardware-grid">
+                        <div class="hw-card">
+                            <img src="img/xiao_esp32_c6.jpg" alt="Seeed XIAO ESP32-C6">
+                            <div class="hw-name">Seeed XIAO ESP32-C6</div>
+                            <a href="https://www.seeedstudio.com/Seeed-XIAO-ESP32-C6-p-5884.html" target="_blank" class="hw-link">Find Online</a>
+                        </div>
+                        <div class="hw-card">
+                            <img src="img/oled.jpg" alt="0.96 OLED">
+                            <div class="hw-name">0.96" OLED I2C</div>
+                            <a href="https://www.aliexpress.com/w/wholesale-0.96-oled-i2c.html" target="_blank" class="hw-link">Find Online</a>
+                        </div>
+                        <div class="hw-card">
+                            <img src="img/wires.jpg" alt="Wires">
+                            <div class="hw-name">Silicone Wires</div>
+                            <a href="https://www.aliexpress.com/w/wholesale-30awg-silicone-wire.html" target="_blank" class="hw-link">Find Online</a>
+                        </div>
+                        <div class="hw-card">
+                            <img src="img/ttp223.jpg" alt="TTP223">
+                            <div class="hw-name">TTP223 (Optional)</div>
+                            <a href="https://www.aliexpress.com/w/wholesale-ttp223-touch-sensor.html" target="_blank" class="hw-link">Find Online</a>
+                        </div>
+                    </div>
+
+                    <p class="wiring-title">Wiring Notes:</p>
+                    <ul class="wiring-list">
+                        <li>For a <strong>Basic Setup</strong> (Screen only), standard female-female jumper wires work perfectly. Soldering is optional but recommended for a cleaner, more durable build.</li>
+                        <li>For the <strong>Full Setup</strong> (Screen + Button), soldering is required to share the limited power pins and ensure a reliable connection.</li>
+                    </ul>
+
+                    <img src="img/Tinytosh_bb.jpg" alt="Tinytosh Wiring Diagram" class="diagram-img">
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Pin Name</th>
+                                    <th>ESP32 Connection</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>OLED Display</strong></td>
+                                    <td>VCC</td>
+                                    <td><span class="pin">3.3V</span> or <span class="pin">5V</span></td>
+                                    <td>Power</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>GND</td>
+                                    <td><span class="pin">G (GND)</span></td>
+                                    <td>Ground</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>SCL</td>
+                                    <td><span class="pin">D5 (GPIO 23)</span></td>
+                                    <td>I2C Clock (Can be reassigned in Web Panel)</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>SDA</td>
+                                    <td><span class="pin">D4 (GPIO 22)</span></td>
+                                    <td>I2C Data (Can be reassigned in Web Panel)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Button (Optional)</strong></td>
+                                    <td>VCC</td>
+                                    <td><span class="pin">3.3V</span></td>
+                                    <td><strong>Do not</strong> use 5V for button</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>I/O (SIG)</td>
+                                    <td><span class="pin">D3 (GPIO 21)</span></td>
+                                    <td>Input Signal (Can be reassigned in Web Panel)</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>GND</td>
+                                    <td><span class="pin">G (GND)</span></td>
+                                    <td>Use Y-splitter or solder to share ground</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="assembly-section">
+                        <h3>🛠️ Assembly in 5 Steps</h3>
+                        <p class="assembly-intro">The 3D-printed case is designed for a tool-free, <strong>screwless assembly</strong>:</p>
+                        <ol class="assembly-steps">
+                            <li><strong>Print the Case:</strong> It consists of two parts (Main Body & Cover) designed with precise rails for a secure snap-fit.</li>
+                            <li><strong>Prepare Hardware:</strong> Solder or wire your components according to the table above.</li>
+                            <li><strong>Slide in Display:</strong> Insert the OLED into the dedicated guide slot from the top. Internal stoppers ensure it sits perfectly level at the bottom.</li>
+                            <li><strong>Insert Electronics:</strong> Place the microcontroller inside the case.
+                                
+                                <div style="margin: 8px 0; font-size: 0.95em;">
+                                    <strong>Touch Button Tip:</strong> If installed, position the sensor against the top of the case. If your wires are rigid, it will naturally rest against the roof; otherwise, use a drop of glue or a piece of tape to secure it.
+                                </div>
+
+                                <div class="note-box design">
+                                    <strong>Design Note:</strong> The ESP32 floats freely inside the case without a tight mount. This is done deliberately to provide ample space for you to add extra sensors, batteries, or peripherals for your own projects. Despite this, the board hardly moves once the case is closed, ensuring no issues when inserting the USB cable.
+                                </div>
+                                Align the Cover with the rails on the Main Body and snap it shut.
+                            </li>
+                            <li><strong>Connect:</strong> Plug a USB-C cable into the port cutout on the back.
+                                <div class="note-box warning">
+                                    <strong>Troubleshooting:</strong> If the device constantly connects and disconnects (boot loop) when plugged in, unplug it, hold the button labeled <strong>BOOT</strong> on the board, plug it back in while holding, and wait 2 seconds before releasing. This forces "Download Mode" so you can flash it.
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="info-box flex-row" style="margin-top: 25px;">
+                        <div>
+                            <strong>🖨️ 3D Printed Case</strong><br>
+                            <p style="margin-top: 5px;">
+                                The original case was designed for the <strong>ESP32-C3 SuperMini</strong> footprint. The XIAO ESP32-C6 is a similar size (21×17.5 mm) and will fit the same case with minor adjustments — the USB-C cutout, OLED slot, and snap-fit rails all line up. If you want a perfect fit, redesigning the main body for the XIAO's pin header layout is recommended.
+                            </p>
+                        </div>
+                        <a href="https://makerworld.com/en/models/2270326-tinytosh-mini-retro-pc-smart-wifi-display-esp32" target="_blank" class="btn" style="min-width: 140px; font-size: 0.9rem;">Open on MakerWorld</a>
+                    </div>
+
+                    <details open>
+                        <summary>📸 Assembly Images</summary>
+                        <div class="assembly-container">
+                            <div class="assembly-grid">
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_0.jpg" alt="3D Printed Case Parts" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">1. The 3D printed case parts</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_1.jpg" alt="Snap Fit Mechanism" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">2. Case parts designed for snap-fit</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_2.jpg" alt="Wiring with Jumpers" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">3. Option A: Wired with jumpers</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_3.jpg" alt="Soldered Wiring" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">4. Option B: Soldered connection with button</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_4.jpg" alt="Fitting Jumpers" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">5. Installing components (Jumpers)</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_5.jpg" alt="Fitting Soldered" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">6. Installing components (Soldered + Button)</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_6.jpg" alt="Final Result Front" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">7. Final Result</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/assembly_7.jpg" alt="Back View USB" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">8. Rear view with USB-C connected</div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section>
+                <h2>Step 2: Flash Firmware</h2>
+                <div class="step">
+                    <h3 class="step-subtitle">Web Installer</h3>
+                    <p>The easiest way to get started. Connect your <strong>XIAO ESP32-C6</strong> to your computer via USB and click the button below. Note: Requires a Chromium-based browser (Chrome, Edge, Opera).</p>
+
+                    <div class="note-box warning" style="margin-bottom: 16px;">
+                        <strong>📌 First-time XIAO C6 flash:</strong>
+                        If your board has never been flashed before, hold the <strong>BOOT</strong> button while plugging in USB, then release after ~2&nbsp;seconds. This forces the ROM bootloader so the web installer can see it.
+                        <br><br>
+                        After the first successful flash, future updates can be done over the air — no button needed.
+                    </div>
+
+                    <esp-web-install-button manifest="manifest_c6.json">
+                        <button slot="activate" class="btn">Connect &amp; Flash XIAO ESP32-C6</button>
+                    </esp-web-install-button>
+
+                    <hr class="step-divider">
+
+                    <h3 class="step-subtitle">Manual Installation</h3>
+                    <p>
+                        If the web installer doesn't work for you, or if you prefer to customize the firmware using <strong>Arduino IDE</strong> or <strong>PlatformIO</strong>, you can download the source code directly.
+                    </p>
+
+                    <div class="note-box alert" style="margin-bottom: 20px;">
+                        <strong>⚠️ XIAO ESP32-C6 Build Settings</strong><br>
+                        In <strong>Arduino IDE</strong>, set:
+                        <ul style="margin: 8px 0 0 18px;">
+                            <li>Board: <code>XIAO_ESP32C6</code> (under <em>esp32 &gt; ESP32C6 Dev Modules</em> — newer cores list it directly as <em>Seeed XIAO ESP32-C6</em>)</li>
+                            <li>USB CDC On Boot: <strong>Enabled</strong> &nbsp;(required — the XIAO C6 has no USB-to-serial chip, so without CDC, <code>Serial</code> goes nowhere)</li>
+                            <li>Flash Size: <strong>4MB (32Mb)</strong></li>
+                            <li>Partition Scheme: <strong>Default 4MB with spiffs</strong></li>
+                            <li>Upload Speed: <strong>921600</strong></li>
+                        </ul>
+                        <br>
+                        In <strong>PlatformIO</strong>, use:
+                        <pre style="background:#0d1117;color:#e6edf3;padding:10px;border-radius:6px;overflow:auto;"><code>[env:xiao-esp32c6]
+platform = espressif32
+board = esp32-c6-devkitc-1
+framework = arduino
+monitor_speed = 115200
+upload_speed = 921600
+build_flags = -DTINYTOSH_BOARD=XIAO_ESP32_C6</code></pre>
+                        The <code>-DTINYTOSH_BOARD=XIAO_ESP32_C6</code> flag tells the firmware to use the XIAO C6 default pins (<strong>D3/D4/D5</strong>) instead of the C3 defaults (<strong>8/9/10</strong>).
+                    </div>
+
+                    <div class="note-box alert" style="margin-bottom: 20px;">
+                        <strong>⚠️ Compilation Requirement</strong><br>
+                        The source code requires specific external libraries (<em>WiFiManager, ArduinoJson, Adafruit SSD1306, Adafruit GFX Library, OneButton, PubSubClient</em>) to compile successfully.
+                        <br>
+                        Please ensure you install all dependencies listed in the <strong>"Build & Compile Guide"</strong> section of the GitHub README. Use <strong>esp32 Arduino core v3.0.0+</strong> for proper C6 support.
+                    </div>
+                    
+                    <div class="info-box flex-row source-code">
+                        <div>
+                            <strong>📦 Source Code</strong><br>
+                            <span class="small-desc">Get the latest code from the GitHub repository.</span>
+                        </div>
+                        <a href="https://github.com/VladimirGitsarev/Tinytosh" target="_blank" class="btn btn-github">
+                            <span class="btn-icon-spacer">★</span> Download on GitHub
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Step 3: Initial WiFi Setup</h2>
+                <div class="step">
+                    <div class="note-box design" style="margin-bottom: 16px;">
+                        <strong>📡 XIAO ESP32-C6 antenna note:</strong>
+                        The XIAO C6 ships with the on-board ceramic antenna selected by default. If your Tinytosh is in an enclosure or far from your router, range can be limited. The board also has a U.FL connector for an external antenna — switching requires reflashing with antenna-select GPIOs set high (see Seeed's wiki). For most desk-side setups, the default ceramic antenna works fine.
+                    </div>
+                    <ol>
+                        <li>
+                            <strong>Connect to Device:</strong> On your Phone or PC, search for the WiFi network named <code>Tinytosh</code> and connect.
+                            <br>🔑 Password: <code>Tinytosh</code>
+                        </li>
+                        <li>
+                            <strong>Configure Credentials:</strong> A "Captive Portal" page should open automatically.
+                            <br><span class="small-note"><em>(If it doesn't open, type <code>192.168.4.1</code> into your browser).</em></span>
+                            <br>Click the <strong>Configure WiFi</strong> button, select your home network, and enter your password.
+                        </li>
+                        <li>
+                            <strong>Catch the IP & Name:</strong> The device will attempt to connect. Watch the OLED screen closely! 
+                            <br>Upon success, it will display <strong>"Connected!"</strong> followed by its <strong>IP Address</strong> (e.g., <code>192.168.0.100</code>) and its unique <strong>Device Name</strong> (e.g., <code>tinytosh-ab12</code>).
+                            <div class="note-box alert">
+                                ⚠️ <strong>Note:</strong> This screen is displayed for only <strong>3 seconds</strong>. If you miss it, simply unplug and replug the device to see it again.
+                            </div>
+                        </li>
+                        <li>
+                            <strong>Access Panel:</strong> Connect your Phone/PC back to your <strong>Home WiFi</strong> (the same one Tinytosh is on). Type the IP address OR the unique local address (e.g., <code>http://tinytosh-ab12.local</code>) into your browser to open the Web Panel.
+                        </li>
+                    </ol>
+
+                    <details open>
+                        <summary>📸 Connection Walkthrough</summary>
+                        <div class="assembly-container">
+                            <div class="assembly-grid">
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/connection_1.jpg" alt="OLED showing AP Mode" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">1. Screen shows "Not Connected"</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/connection_2.jpg" alt="WiFi Settings on Phone" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">2. Connect to "Tinytosh" Network</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/connection_3.jpg" alt="WiFi Manager Portal" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">3. Click "Configure WiFi"</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/connection_4.jpg" alt="Entering Credentials" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">4. Enter Home WiFi Details</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/connection_5.jpg" alt="OLED showing IP" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">5. Success! Note the IP Address & Name</div>
+                                </div>
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/connection_6.jpg" alt="Web Panel Open" class="real-photo">
+                                    </div>
+                                    <div class="assembly-caption">6. Open Local Name or IP in Browser</div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section>
+                <h2>Step 4: Web Panel Configuration</h2>
+                <p>Access the <strong>Web Panel</strong> by entering the device's IP address (or <code>.local</code> name) into your browser. Configure your device using the sections below:</p>
+                
+                <div class="highlight-feature">
+                    <div class="feature-header">✨ Core Concept: Modular Dashboard</div>
+                    <p>
+                        Tinytosh is designed to be fully customizable, powerful, and incredibly smooth.
+                    </p>
+                    <ul style="margin-top: 15px; margin-bottom: 20px;">
+                        <li><strong>⚡ Async RTOS:</strong> Employs background FreeRTOS tasks to fetch API data asynchronously. The display and animations stay buttery smooth without ever freezing to download data.</li>
+                        <li><strong>🎛️ Flexible Configuration:</strong> You aren't tied to the Web Panel. You can change every device setting instantly via the native desktop PC App.</li>
+                    </ul>
+
+                    <div class="feature-section-title">Modular Dashboard & Drag & Drop</div>
+                    <p class="desc">
+                        <strong>How it works:</strong> Each section in the Web Panel has a main <strong>Enable Checkbox</strong>. 
+                        <br>• <strong>Uncheck it:</strong> The screen is completely removed from the rotation and the settings collapse.
+                        <br>• <strong>Check it:</strong> The settings expand, and the screen is added to the cycle.
+                    </p>
+                    <p class="example">
+                        <em>Example: Disable everything except "PC Monitor" to turn Tinytosh into a dedicated hardware tracker, or enable everything for a complete smart hub.</em>
+                    </p>
+                    <div class="feature-section-title">Drag & Drop Reordering</div>
+                    <p>
+                        Take full control of your device's flow using the <strong>Screen Display Order</strong> panel.
+                    </p>
+                        Every screen (Time, Weather, PC, etc.) acts as a standalone module. Uncheck a screen to remove it from your device completely. Grab the ☰ handle on the <strong>Screen Display Order</strong> panel to drag and drop your active screens into any sequence you like!
+                    </p>
+
+                    <details open class="dark-mode">
+                        <summary>🎥 Interface Demo</summary>
+                        <div class="assembly-container">
+                            <div class="assembly-item">
+                                <div class="assembly-img-wrapper">
+                                    <img src="img/web_panel_demo.gif" alt="Web Panel Interaction Demo" style="width: 100%; height: auto; object-fit: contain;">
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="feature-stack">
+
+                    <div class="feature-item global-item">
+                        <div class="feature-header">🔌 Hardware Setup</div>
+                        <p>Customize your pinout without touching the code!</p>
+                        <ul>
+                            <li><strong>Custom I2C Pins:</strong> Assign the SDA and SCL pins to match your specific ESP32 board version or custom PCB.</li>
+                            <li><strong>Touch Pin:</strong> Assign the GPIO pin used for your touch button.</li>
+                            <li><strong>Safety Net:</strong> The firmware automatically validates pin assignments to prevent accidental short-circuits.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-item global-item">
+                        <div class="feature-header">⚙️ Global Settings</div>
+                        
+                        <div class="feature-section-title">🎨 OLED Theme Engine</div>
+                        <p>Tinytosh uses an advanced procedural design system for its Web and PC UI. You only need to pick 4 base colors:</p>
+                        <ul>
+                            <li><strong>App Background:</strong> The absolute darkest canvas layer.</li>
+                            <li><strong>Surface / Panels:</strong> The elevated card layer.</li>
+                            <li><strong>Primary Accent:</strong> Used exclusively for active buttons, data highlights, and glowing shadows.</li>
+                            <li><strong>Main Text:</strong> Your standard reading color.</li>
+                        </ul>
+                        <p class="help-text">The Web Panel and PC App automatically calculate all hover states, borders, and muted text tones to maintain a perfect, consistent UI based on those 4 colors.</p>
+
+                        <details open>
+                            <summary>📸 Theme Examples</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/theme_1.png" alt="Theme Example 1" style="object-fit: cover; object-position: top;">
+                                        </div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/theme_2.png" alt="Theme Example 2" style="object-fit: cover; object-position: top;">
+                                        </div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/theme_3.png" alt="Theme Example 3" style="object-fit: cover; object-position: top;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <div class="feature-section-title">Visual Effects</div>
+                        <p>Customize how the device transitions between different screens:</p>
+                        <ul>
+                            <li><strong>Active Animations:</strong> Select exactly which effects you want to enable (Slide, Dissolve, Curtain, Blinds). If multiple are checked, the device will randomly cycle through your specific selection.</li>
+                            <li><strong>Time Format:</strong> Toggle between 12-hour (AM/PM) and 24-hour clock formats for both the device and web panel.</li>
+                        </ul>
+
+                        <details open>
+                            <summary>🎥 Animation Demo</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-item">
+                                    <div class="assembly-img-wrapper">
+                                        <img src="img/animations.gif" alt="Screen Transitions Demo" style="width: 100%; height: auto; object-fit: contain;">
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <div class="feature-section-title">Control Logic</div>
+                        <ul>
+                            <li><strong>Switch Screens Automatically:</strong> If checked, screens rotate automatically. If unchecked, the screen stays static until you press the hardware button.</li>
+                            <li><strong>Screen Cycle Interval:</strong> Time (in seconds) each screen stays visible before rotating.</li>
+                            <li><strong>Data Sync Interval:</strong> Frequency (in minutes) of data fetches for Weather, Air Quality, Crypto, Stocks, and Currencies.</li>
+                        </ul>
+
+                        <div class="feature-section-title">🌙 Night Mode & Power Saving</div>
+                        <p>Set a quiet schedule to minimize sleep distractions and conserve API quotas.</p>
+                        <ul>
+                            <li><strong>Action Modes:</strong> Choose what happens during the scheduled hours: <em>No Visual Change</em>, <em>Dim Display</em> (minimum hardware contrast), <em>Turn Display Off</em> (completely black), or <em>Dim then Turn Off</em> (gradually steps down).</li>
+                            <li><strong>Dim Start Time:</strong> If you select "Dim then Turn Off," an extra time picker will appear. This lets you set exactly when the screen dims before fully turning off later in the night.</li>
+                            <li><strong>Smart Latching:</strong> Night Mode won't interrupt your reading. It waits patiently until the rotation naturally lands on your first (primary) screen before applying the dark settings and pausing the screen cycle.</li>
+                            <li><strong>Background Optimization:</strong> Background data fetches (Weather, Crypto, etc.) automatically slow down 10x during Night Mode to save power.</li>
+                            <li><strong>Temporary Wake:</strong> If the screen is Off, pressing the physical button will temporarily wake the device at minimum brightness for 30 seconds so you can check the time in the dark!</li>
+                        </ul>
+
+                        <div class="feature-section-title">Location & Timezone</div>
+                        <p>Tinytosh uses these settings to provide accurate Clock, Weather, Air Quality, and Holiday data.</p>
+                        <ul>
+                            <li><strong>Auto-Detect:</strong> Uses your IP address to automatically determine location, country, and timezone.</li>
+                            <li><strong>Manual Entry:</strong> Override with specific City names, Latitude/Longitude coordinates, precise Country selection, and native Timezones.</li>
+                        </ul>
+                        <span class="api-tag">Source: ip-api.com</span>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-header">👆 Touch Button Controls</div>
+                        <p>If you installed the optional TTP223 touch sensor, you can control Tinytosh directly:</p>
+                        <ul>
+                            <li><strong>Single Tap:</strong> Instantly skips to the next active screen in your rotation. If the display was turned off by Night Mode, this temporarily wakes it up.</li>
+                            <li><strong>Long Press (Hold):</strong> Locks or unlocks the current screen. Disables the auto-cycle rotation so you can keep a specific screen visible as long as you want.</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-item" id="screen-clock">
+                        <div class="feature-header">🕒 Simple Clock</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Displays the current time and date, automatically synchronized via the internet based on your local timezone.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <p>While location and timezone are managed in <strong>Global Settings</strong>, this screen offers specific customization:</p>
+                        <ul>
+                            <li><strong>Date Toggle:</strong> Choose to display the full date or hide it for a cleaner look.</li>
+                        </ul>
+
+                        <div class="feature-section-title">Layout</div>
+                        <p>
+                            <strong>Standard:</strong> A balanced view showing time at the top (Size 3) and the date/day below. <br>
+                            <strong>Minimalist:</strong> If the date is disabled, the clock switches to <strong>Jumbo Mode</strong> (Size 4), perfectly centered on both axes for maximum readability.
+                        </p>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_clock.png" alt="Clock Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_clock.jpg" alt="Clock Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-calendar">
+                        <div class="feature-header">📅 Calendar & Holidays</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Displays the current date alongside a full monthly grid and tracks national public holidays based on your country.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Start Week On:</strong> Choose whether the calendar grid starts on Monday or Sunday.</li>
+                            <li><strong>National Holidays:</strong> Toggle the display of public holidays. When a holiday occurs, it replaces the weekday text and highlights the day on the grid.</li>
+                            <li><strong>Minimalistic Mode:</strong> Hides the monthly grid entirely and beautifully centers the current day, month, and year on the screen.</li>
+                        </ul>
+
+                        <div class="feature-section-title">Layout</div>
+                        <p>
+                            <strong>Standard:</strong> Left side displays a large day, current month, year, and weekday/holiday name. Right side displays a full month calendar with the current day boxed and holidays inverted. <br>
+                            <strong>Minimalist:</strong> The grid is hidden, and the date column expands to fill the screen for a clean, highly readable layout.
+                        </p>
+                        <span class="api-tag">Source: date.nager.at (Public Holidays)</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_calendar.png" alt="Calendar Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_calendar.jpg" alt="Calendar Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-weather">
+                        <div class="feature-header">🌤️ Weather Station</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Fetches and displays real-time weather conditions and daily forecasts based on your location.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Temperature Unit:</strong> Toggle between Celsius (°C) and Fahrenheit (°F).</li>
+                            <li><strong>Round Values:</strong> Choose between rounded integers (22°) or precise decimals (21.8°).</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>Top: City and Time. Center: Big Temperature and condition icon/desc. Bottom: Feels like, Humidity (%), and Wind Speed (km/h).</p>
+                        <span class="api-tag">Source: api.open-meteo.com</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_weather.png" alt="Weather Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_weather.jpg" alt="Weather Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-aqi">
+                        <div class="feature-header">🍃 Air Quality</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Monitors local Air Quality Index (AQI) and specific pollutant levels to keep you informed about your environment.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <p>Choose your preferred AQI standard (US or EU).</p>
+                        <div class="info-box">
+                            <strong>Standard Difference:</strong> US AQI (0-500) focuses on health risk thresholds. European AQI (0-100+) tracks specific pollutant concentrations (PM2.5, PM10, NO2).
+                        </div>
+                        <div class="feature-section-title">Layout</div>
+                        <p>Top: City and Time. Center: AQI Value, Standard Type, and Status Icon. Bottom: Real-time PM2.5, PM10, and NO2 levels in µg/m³.</p>
+                        <span class="api-tag">Source: air-quality-api.open-meteo.com</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_aqi.png" alt="AQI Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_aqi.jpg" alt="AQI Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-daylight">
+                        <div class="feature-header">☀️ Daylight Info</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Tracks the sun's position throughout the day, providing precise times for sunrise, sunset, solar noon, and total day length based on your location.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Minimalistic Mode:</strong> Hides the progress timeline to cleanly centralize the core daily schedule.</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>A dynamic UI that switches icons and math based on whether it is currently daytime or nighttime. Includes a live progress bar tracking the sun's journey.</p>
+                        <span class="api-tag">Source: api.sunrise-sunset.org</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_daylight.png" alt="Daylight Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_daylight.jpg" alt="Daylight Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-stock">
+                        <div class="feature-header">📊 Stock Tracker</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Tracks live market data for ~100 top global assets, including US Mega-Cap Tech, broad market ETFs, and international ADRs.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Asset Selection:</strong> Track <strong>up to 5</strong> stocks/ETFs at once. The screen will automatically paginate through them during its rotation cycle!</li>
+                            <li><strong>Display Format:</strong> Toggle between showing the minimalist Ticker (e.g., AAPL) or the Full Company Name (e.g., Apple Inc.).</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>Shows the stock ticker/name, current price in USD, a daily trend icon, and the percentage change since the previous close.</p>
+                        <span class="api-tag">Source: query1.finance.yahoo.com</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_stock.png" alt="Stock Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_stock.jpg" alt="Stock Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-crypto">
+                        <div class="feature-header">📈 Crypto Tracker</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Tracks live market prices and 24-hour trends for the top 75 global cryptocurrencies.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Coin Selection:</strong> Track <strong>up to 5</strong> coins at once. The screen will smoothly rotate through them.</li>
+                            <li><strong>Display Format:</strong> Toggle between the clean, standard Ticker (e.g., BTC) or displaying the Full Coin Name (e.g., Bitcoin).</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>Shows the coin ticker/name, current price in USD, a daily trend icon, and the 24h percentage change.</p>
+                        <span class="api-tag">Source: api.coinlore.net</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_crypto.png" alt="Crypto Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_crypto.jpg" alt="Crypto Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-currency">
+                        <div class="feature-header">💱 Currency Tracker</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Tracks live exchange rates between over 150 global fiat currencies.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Base & Target:</strong> Track <strong>up to 5</strong> currency pairs at once (e.g., USD to EUR).</li>
+                            <li><strong>Multiplier Amount:</strong> Essential for viewing exchange rates with large differences. Instead of viewing the tiny fraction for 1 unit, you can track the rate for 10, 100, 1,000, or 10,000 units for better readability.</li>
+                            <li><strong>Display Format:</strong> Toggle between the Base Currency Code (e.g., USD) or displaying the Full Currency Name (e.g., US Dollar).</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>Top Left: Base Currency (Large). Bottom Left: Target Rate. Right Side: Multiplier context aligned to the edge (e.g., "1 USD =", "1000 ARS =").</p>
+                        <span class="api-tag">Source: cdn.jsdelivr.net/@fawazahmed0/currency-api</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_currency.png" alt="Currency Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_currency.jpg" alt="Currency Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-pc">
+                        <div class="feature-header">🖥️ PC Monitor</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Connects to the Tinytosh PC software on your computer to stream hardware telemetry via USB or Wirelessly.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Auto-hide:</strong> Choose to automatically hide this screen from your rotation when the PC is disconnected or turned off.</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>Displays four horizontal bars: CPU Load (%), RAM Usage (%), Disk Capacity (%), and Network Download Speed (KB/s or MB/s).</p>
+                        <span class="api-tag">Source: Tinytosh PC</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_pc.png" alt="PC Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_pc.jpg" alt="PC Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                    
+                    <div class="feature-item" id="screen-media">
+                        <div class="feature-header">🎵 PC Media</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Streams current media playback info from your PC via the Tinytosh PC software (Spotify, Browsers, Apple Music, etc.).</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Auto-hide:</strong> Choose to automatically hide this screen from your rotation when no media is currently playing.</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>Displays a media icon, playback status (Playing/Paused/Stopped), Track Name, Artist, and Album.</p>
+                        <span class="api-tag">Source: Tinytosh PC</span>
+
+                        <details open>
+                            <summary>📸 Screen Preview</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_media.png" alt="Media Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_media.jpg" alt="Media Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="feature-item" id="screen-bambu">
+                        <div class="feature-header">🖨️ BambuLab 3D Printer</div>
+                        <div class="feature-section-title">Function</div>
+                        <p>Connects directly to your BambuLab 3D printer over your local network to stream live printing telemetry.</p>
+                        <div class="feature-section-title">Settings</div>
+                        <ul>
+                            <li><strong>Required Credentials:</strong> You will need your printer's <strong>Serial Number</strong> and <strong>Access Code</strong>. You can easily find these on your printer's physical screen under <em>Settings > Network (or WLAN)</em>.</li>
+                            <li><strong>Printer IP Address:</strong> This field is optional. Tinytosh features an auto-discovery scanner that will actively hunt for your printer on the network. If your router assigns a new IP to your printer every restart, simply leave this blank!</li>
+                            <li><strong>Connection Time:</strong> After entering your settings, please allow up to a minute for Tinytosh to negotiate the secure connection. The data will start populating on the Web Panel and your OLED display once connected.</li>
+                            <li><strong>Auto-hide:</strong> Choose to automatically hide this screen from your rotation when the printer is offline or disconnected.</li>
+                        </ul>
+                        <div class="feature-section-title">Layout</div>
+                        <p>This module dynamically changes its screen layout based on what the printer is doing:</p>
+                        <ul>
+                            <li><strong>Idle Mode:</strong> When the printer is resting, displaying a cluttered screen full of zeros makes no sense. The UI shifts to a minimalist layout showing just a large printer icon, the "Idle" status, and the current bed and nozzle temperatures.</li>
+                            <li><strong>Printing Mode:</strong> When a print starts, the UI expands into a dense telemetry dashboard showing: Print Progress (%), Time Left (mins), Current vs Total Layers, the File Name, Target & Actual Temperatures for Bed/Nozzle, and Part/Auxiliary Fan speeds (%).</li>
+                        </ul>
+                        <span class="api-tag">Source: BambuLab Printer (MQTT)</span>
+
+                        <details open>
+                            <summary>📸 Screen Previews</summary>
+                            <div class="assembly-container">
+                                <div class="assembly-grid">
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_bambu_idle.png" alt="Bambu Idle Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_bambu_idle.jpg" alt="Bambu Idle Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/render_bambu_active.png" alt="Bambu Active Layout Render">
+                                        </div>
+                                        <div class="assembly-caption">Layout Render</div>
+                                    </div>
+                                    <div class="assembly-item">
+                                        <div class="assembly-img-wrapper">
+                                            <img src="img/real_bambu_active.jpg" alt="Bambu Active Real Photo" class="real-photo">
+                                        </div>
+                                        <div class="assembly-caption">Real Photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                </div>
+            </section>
+
+            <section>
+                <h2>Step 5: PC Software</h2>
+                <div class="step">
+                    <p>To enable <strong>PC Monitor</strong> and <strong>PC Media</strong> modes, you need the PC software running on your computer. This lightweight app reads your system stats and sends them to Tinytosh over USB or Wi-Fi.</p>
+                    
+                    <div class="app-screenshot-grid">
+                        <img src="img/tinytosh-pc-1.png" alt="Tinytosh App Main" class="app-screenshot">
+                        <img src="img/tinytosh-pc-2.png" alt="Tinytosh App Settings" class="app-screenshot">
+                    </div>
+
+                    <div class="app-features" style="margin-bottom: 25px;">
+                        <div class="feature-section-title" style="margin-top: 0;">Key Features</div>
+                        <ul style="margin-top: 10px;">
+                            <li><strong>Native Monitoring:</strong> Reads system stats (CPU, RAM, Network) directly — no AIDA64, HWiNFO, or third-party bloatware required.</li>
+                            <li><strong>Wireless Telemetry & Auto-Connect:</strong> Automatically discovers Tinytosh devices on your network (mDNS) and connects on startup to broadcast stats via USB or completely wirelessly!</li>
+                            <li><strong>Smart Connection Fallback:</strong> Prioritizes USB for stability. Yank the cable? It instantly and silently falls back to Wi-Fi.</li>
+                            <li><strong>Hardware Pairing Lock:</strong> Tinytosh securely pairs to the active PC to ensure multiple computers don't fight over the display.</li>
+                            <li><strong>Dynamic UI & Complete Control:</strong> The PC app dashboard mirrors your device! Configuration panels automatically reorder in real-time, letting you manage all settings directly from the desktop.</li>
+                            <li><strong>Real-time Dashboard:</strong> See exactly what telemetry data is being sent to your device at a glance.</li>
+                            <li><strong>Manual Control:</strong> Override port/IP selection and toggle data streaming instantly.</li>
+                            <li><strong>System Tray & Boot:</strong> Minimizes quietly to the background; accessible anytime via the tray icon, with an optional setting to launch automatically on login.</li>
+                        </ul>
+                    </div>
+
+                    <div id="loading-text">Fetching latest version...</div>
+
+                    <div class="btn-container">
+                        <a href="https://github.com/VladimirGitsarev/Tinytosh/releases/latest" id="btn-win" class="btn">
+                            Windows (.exe)
+                        </a>
+
+                        <a href="https://github.com/VladimirGitsarev/Tinytosh/releases/latest" id="btn-mac" class="btn">
+                            macOS (.dmg)
+                        </a>
+
+                        <a href="https://github.com/VladimirGitsarev/Tinytosh/releases/latest" id="btn-linux" class="btn">
+                            Linux (.deb)
+                        </a>
+                    </div>
+
+                    <div class="info-box security-warning">
+                        <strong>⚠️ A Note on Security Warnings</strong><br>
+                        <p>
+                            I am a hobbyist developer, not a corporation. I do not have expensive code-signing certificates from Microsoft or Apple. Because of this, your OS or browser may flag the app as "Unknown" or "Potentially Dangerous." This is standard behavior for unsigned open-source software.
+                        </p>
+                        <p>
+                            If you have concerns, the entire project is open-source. You are welcome (and encouraged!) to <a href="https://github.com/VladimirGitsarev/Tinytosh" target="_blank" style="color: var(--accent);">review the code on GitHub</a> to verify it is safe.
+                        </p>
+                    </div>
+
+                    <div class="os-grid">
+                        <div class="os-card">
+                            <strong class="os-title">Windows Users:</strong><br>
+                            <span class="os-note">
+                                Browser may block the download. Click <em>"Keep"</em> or <em>"More actions > Keep anyway"</em>. SmartScreen may also appear; click <em>"More Info > Run Anyway"</em>.
+                            </span>
+                        </div>
+                        <div class="os-card">
+                            <strong class="os-title">macOS Users:</strong><br>
+                            <span class="os-note">
+                                If you see "App is damaged" or "Can't be opened", move it to Applications, open Terminal, and run:<br>
+                                <code class="os-cmd">xattr -cr /Applications/TinytoshPC.app</code>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <p class="linux-footer">
+                        🐧 <strong>Linux Users:</strong> God save Linux. Thanks, Linus Torvalds. It just works.
+                    </p>
+
+                </div>
+            </section>
+
+            <section>
+                <h2>Step 6: Enjoy & Innovate</h2>
+                <div class="step">
+                    <p>
+                        <strong>Congratulations!</strong> Your Tinytosh is now up and running.
+                    </p>
+                    <div class="success-img-container">
+                        <img src="img/success.gif" alt="Success!" class="success-img">
+                    </div>
+                    <p>
+                        Tinytosh is <strong>Open Source</strong> for a reason — it is designed to be a playground for your creativity. You are not limited to the features provided out of the box.
+                    </p>
+                    
+                    <h3 class="step-subtitle-make">Make it Yours</h3>
+                    <ul class="make-list">
+                        <li><strong>Modify the Code:</strong> Hack the source, tweak fonts, or adjust animation speeds.</li>
+                        <li><strong>Build New Modules:</strong> Create your screen, design new animation, or add customization.</li>
+                        <li><strong>Share Your Work:</strong> Show off your build, remix the case, or contribute new features.</li>
+                    </ul>
+
+                    <div class="info-box idea">
+                        <strong>💡 Have an idea?</strong><br>
+                        The best features come from user suggestions. If you have an idea for a new screen, found a bug, or just want to show off your build, join the conversation on your preferred platform.
+                    </div>
+
+                    <div class="btn-container centered">
+                        <a href="https://makerworld.com/en/models/2270326-tinytosh-mini-retro-pc-smart-wifi-display-esp32" target="_blank" class="btn btn-makerworld">
+                            MakerWorld
+                        </a>
+
+                        <a href="https://github.com/VladimirGitsarev/Tinytosh/issues" target="_blank" class="btn btn-github btn-wide">
+                            GitHub Issues
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                Tinytosh is an open-source DIY project. All data is fetched via free APIs. <br>
+                <a href="https://github.com/VladimirGitsarev/Tinytosh" class="footer-link">View Source on GitHub</a>
+            </footer>
+        </div>
+
+        <script src="script.js"></script>
+
+    </body>
+</html>

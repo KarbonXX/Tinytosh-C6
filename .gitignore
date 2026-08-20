@@ -1,0 +1,19 @@
+# Build artifacts (the precompiled Tinytosh-C6.bin is the ONLY file we keep;
+# everything else in build/ is regenerable)
+build/output/
+build/sketch/
+build/build.options.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Arduino / PlatformIO
+*.ino.hex
+*.ino.elf
+*.ino.map
+.pio/
+.vscode/.arduino.json
