@@ -7,6 +7,8 @@
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <ESPmDNS.h>
+#include <Preferences.h>
+#include <nvs_flash.h>
 #include "zones.h"
 
 WebServerService::WebServerService(int port, ConfigSaveCallback callback) : 
@@ -17,13 +19,15 @@ void WebServerService::setAppState(AppState* appState) {
 }
 
 void WebServerService::begin() {
-  server.on("/", HTTP_GET, [this](){ this->handleRoot(); }); 
+  server.on("/", HTTP_GET, [this](){ this->handleRoot(); });
   server.on("/save", HTTP_POST, [this](){ this->handleSave(); });
-  server.on("/update", HTTP_GET, [this](){ this->handleUpdate(); }); 
+  server.on("/update", HTTP_GET, [this](){ this->handleUpdate(); });
   server.on("/pc-stats", HTTP_POST, [this](){ this->handlePcStats(); });
-  
+  server.on("/api/reset", HTTP_POST, [this](){ this->handleReset(); });
+  server.on("/api/reset", HTTP_GET,  [this](){ this->handleReset(); });  // also accept GET for browser bookmarklets
+
   server.begin();
-  Serial.println("WebServerService: HTTP Server started."); 
+  Serial.println("WebServerService: HTTP Server started.");
   
   String uniqueName = state->config.device_id;
 
@@ -572,7 +576,11 @@ void WebServerService::handleRoot() {
   }
 
   add("</div>");
-  add("<button type='submit'>💾 Save & Apply All Settings</button></form>");
+  add("<div style='display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 20px;'>");
+  add("  <button type='submit'>💾 Save &amp; Apply All Settings</button>");
+  add("  <button type='button' onclick=\"if(confirm('�️ This will erase ALL settings (including WiFi) and reboot Tinytosh into setup mode. Continue?')){fetch('/api/reset',{method:'POST'}).then(()=>{document.body.innerHTML='<h2 style=\"text-align:center;margin-top:40px\">🔄 Resetting... reconnect to the Tinytosh WiFi in 10 seconds.</h2>';});}\" style='background: var(--card); color: #f87171; border: 1px solid #f87171;'>🔄 Reset &amp; Forget WiFi</button>");
+  add("</div>");
+  add("</form>");
   
   add("<script>");
   add("let formDirty = false;");
@@ -1071,4 +1079,24 @@ void WebServerService::handlePcStats() {
   } else {
     server.send(HTTP_FORBIDDEN, "application/json", "{\"status\":\"error\", \"message\":\"Device is already paired to another PC\"}");
   }
+}
+void WebServerService::handleReset() {
+  Serial.println("WebServerService: /api/reset received — wiping NVS and rebooting.");
+  server.send(HTTP_OK, "text/plain", "Resetting... Tinytosh will reboot in 2 seconds.");
+
+  // Clear our app config namespace AND the WiFiManager creds namespace.
+  // Both are stored in NVS; clearing them forces the captive portal on next boot.
+  Preferences prefs;
+  prefs.begin("tinytosh_config", false);
+  prefs.clear();
+  prefs.end();
+
+  // WiFiManager stores creds in a separate namespace (often "wificonfig" or its own).
+  // We don't know the exact key, so just nuke the whole NVS partition to be safe.
+  // ESP-IDF's nvs_flash_erase is what we want — it's safe and only touches NVS.
+  nvs_flash_erase();
+
+  // Give the HTTP response time to flush
+  delay(2000);
+  ESP.restart();
 }

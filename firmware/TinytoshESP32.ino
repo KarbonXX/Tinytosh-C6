@@ -272,6 +272,12 @@ void handleLongPress() {
 }
 
 void updateAllData() {
+  // Watchdog: if any single API call hangs (DNS resolve, TCP, etc.),
+  // the firmware would otherwise wedge forever and stop responding to
+  // the web panel. ESP task watchdog is 30s; we explicitly guard each
+  // service with a per-call timeout (already in each service's HTTPClient).
+  // Here we just log progress so the user can see what's happening.
+  Serial.println("updateAllData: starting...");
   nightModeLatched = false;
 
   // 1. Location Detection
@@ -429,9 +435,16 @@ void setup() {
   WiFiManager wm;
   wm.setConnectTimeout(15);
   wm.setConnectRetries(3);
+  wm.setConfigPortalTimeout(180);  // portal auto-closes after 3 min if user abandons it
+  wm.setConfigPortalBlocking(true);
+
+  // Callback fired AFTER WiFiManager has written creds to NVS — confirms save happened
+  wm.setSaveConfigCallback([]() {
+    Serial.println("✓ WiFiManager: credentials saved to NVS.");
+  });
 
   wm.setAPCallback([](WiFiManager* m) {
-    displayService.showOLEDStatus({"\n", "WiFi not connected", "\n", "Connect to WiFi:", AP_SSID, "\n", "Password:", AP_PASS}, true);
+    displayService.showOLEDStatus({"", "WiFi not connected", "", "Connect to WiFi:", AP_SSID, "", "Password:", AP_PASS, "", "or visit 192.168.4.1"}, true);
   });
 
   displayService.showOLEDStatus({"\n", "\n", "Connecting...", "\n", "\n", "Searching WiFi..."}, true);
