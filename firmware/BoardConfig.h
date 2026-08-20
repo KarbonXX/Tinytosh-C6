@@ -13,13 +13,13 @@
 namespace BoardPins {
 
 #if TINYTOSH_BOARD == XIAO_ESP32_C6
-  // Seeed XIAO ESP32-C6 — safe defaults
-  //   D3 (GPIO21) — touch (not strapping/flash/UART)
-  //   D4 (GPIO22) — I2C SDA
-  //   D5 (GPIO23) — I2C SCL
+  // Seeed XIAO ESP32-C6 — user-requested defaults
+  //   D10 (GPIO18) — I2C SCL
+  //   D9  (GPIO20) — I2C SDA
+  //   D3  (GPIO21) — touch (not strapping, not flash, not UART)
   constexpr int DEFAULT_TOUCH_PIN = 21;
-  constexpr int DEFAULT_SDA_PIN   = 22;
-  constexpr int DEFAULT_SCL_PIN   = 23;
+  constexpr int DEFAULT_SDA_PIN   = 20;
+  constexpr int DEFAULT_SCL_PIN   = 18;
 
   // C3 defaults kept around so first-boot detection can spot a fresh flash
   // whose NVS still contains C3 pin values from a previous build.
@@ -37,7 +37,7 @@ namespace BoardPins {
   //   GPIO 15     → strapping pin (JTAG MTDO)
   //   GPIO 16, 17 → UART0 (used by USB-CDC serial monitor)
   //   GPIO 18, 19 → connected to internal flash (FSPIQ, FSPID)
-  constexpr int BLOCKED_PINS[] = {3, 4, 5, 6, 7, 8, 9, 15, 16, 17, 18, 19};
+  constexpr int BLOCKED_PINS[] = {3, 4, 5, 6, 7, 8, 9, 15, 16, 17};
   constexpr int BLOCKED_COUNT = sizeof(BLOCKED_PINS) / sizeof(BLOCKED_PINS[0]);
 
   constexpr const char* BOARD_NAME = "XIAO ESP32-C6";

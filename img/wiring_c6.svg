@@ -91,13 +91,15 @@
   <!-- WIRES - all horizontal, each in its own row, no crossings       -->
   <!-- ════════════════════════════════════════════════════════════════ -->
 
-  <!-- Row 1: SDA GREEN (OLED → XIAO D4) at y=180 -->
-  <path d="M 195 277 L 472 177" stroke="#34d399" stroke-width="3" fill="none"/>
-  <text x="220" y="240" fill="#34d399" font-size="12" font-weight="700">SDA → D4 (GPIO22)</text>
+  <!-- Row 1: SDA GREEN (OLED → XIAO D9=GPIO20) -->
+  <path d="M 195 277 L 572 193" stroke="#34d399" stroke-width="3" fill="none"/>
+  <rect x="370" y="180" width="160" height="20" rx="4" fill="#0d1117" stroke="#34d399"/>
+  <text x="450" y="195" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">GREEN → SDA on D9</text>
 
-  <!-- Row 2: SCL YELLOW (OLED → XIAO D5) at y=200 -->
-  <path d="M 160 277 L 472 193" stroke="#fbbf24" stroke-width="3" fill="none"/>
-  <text x="220" y="252" fill="#fbbf24" font-size="12" font-weight="700">SCL → D5 (GPIO23)</text>
+  <!-- Row 2: SCL YELLOW (OLED → XIAO D10=GPIO18) -->
+  <path d="M 160 277 L 572 177" stroke="#fbbf24" stroke-width="3" fill="none"/>
+  <rect x="370" y="156" width="160" height="20" rx="4" fill="#0d1117" stroke="#fbbf24"/>
+  <text x="450" y="171" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="700">YELLOW → SCL on D10</text>
 
   <!-- Row 3: Touch SIG BLUE (TTP223 → XIAO D3) -->
   <path d="M 900 287 L 472 165" stroke="#60a5fa" stroke-width="3" fill="none"/>
@@ -128,8 +130,8 @@
     <text x="20" y="36" font-size="11">
       <tspan fill="#f87171" font-weight="700">RED</tspan> = VCC (+3.3V)
       <tspan fill="#9ca3af" font-weight="700">  BLACK</tspan> = GND
-      <tspan fill="#fbbf24" font-weight="700">  YELLOW</tspan> = SCL (I²C clock → D5)
-      <tspan fill="#34d399" font-weight="700">  GREEN</tspan> = SDA (I²C data → D4)
+      <tspan fill="#fbbf24" font-weight="700">  YELLOW</tspan> = SCL (I²C clock → D10/GPIO18)
+      <tspan fill="#34d399" font-weight="700">  GREEN</tspan> = SDA (I²C data → D9/GPIO20)
       <tspan fill="#60a5fa" font-weight="700">  BLUE</tspan> = Touch SIG → D3
     </text>
   </g>
