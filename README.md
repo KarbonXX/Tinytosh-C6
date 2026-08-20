@@ -214,10 +214,31 @@ git push origin feature/xiao-esp32-c6
 gh repo edit --enable-pages --pages-source-branch feature/xiao-esp32-c6
 ```
 
-Then visit `https://<user>.github.io/Tinytosh-C6/` and the **Connect & Flash
+Then visit `https://karbonxx.github.io/Tinytosh-C6/` and the **Connect & Flash
 XIAO ESP32-C6** button will be live.
 
 ---
+
+## Wiring reference
+
+![Wiring diagram: XIAO ESP32-C6 + SSD1306 OLED + TTP223 touch button](img/wiring_c6.png)
+
+**Required connections (OLED to XIAO ESP32-C6):**
+
+| OLED pin | Wire color | XIAO C6 pin | Notes |
+|---|---|---|---|
+| VCC | red | **3V3** | Power, 3.3V only (not 5V) |
+| GND | black | **GND** | Share with TTP223 ground |
+| SCL | yellow | **D5** (GPIO 23) | I²C clock |
+| SDA | green | **D4** (GPIO 22) | I²C data |
+
+**Optional TTP223 touch button:**
+
+| TTP223 pin | Wire color | XIAO C6 pin |
+|---|---|---|
+| VCC | red | splice into OLED's red wire (same 3V3) |
+| GND | black | splice into OLED's black wire (same GND) |
+| SIG | blue | **D3** (GPIO 21) |
 
 ## Troubleshooting
 
