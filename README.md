@@ -14,7 +14,7 @@ guide covers the changes needed for the C6 variant.
 | Concern | C3 (original) | XIAO ESP32-C6 |
 |---|---|---|
 | **Board** | ESP32-C3 SuperMini | Seeed XIAO ESP32-C6 |
-| **Default I²C** | SDA = GPIO 8, SCL = GPIO 9 | SDA = D4 (GPIO 22), SCL = D5 (GPIO 23) |
+| **Default I²C** | SDA = GPIO 8, SCL = GPIO 9 | SDA = D9 (GPIO 20), SCL = D10 (GPIO 18) |
 | **Default touch** | GPIO 10 | D3 (GPIO 21) |
 | **GPIO range exposed in web panel** | 0..21 | 0..30, with ⚠️ markers on strapping/flash/USB pins |
 | **USB serial** | Hardware UART over USB-CDC | **USB CDC On Boot must be Enabled** |
@@ -33,8 +33,8 @@ The OLED and optional TTP223 touch sensor wire to the XIAO's standard I²C pair:
 |---|---|---|
 | OLED VCC | — | **3V3** |
 | OLED GND | — | **GND** |
-| OLED SCL | — | **D5** (GPIO 23) |
-| OLED SDA | — | **D4** (GPIO 22) |
+| OLED SCL | — | **D10** (GPIO 18) |
+| OLED SDA | — | **D9** (GPIO 20) |
 | Touch VCC | — | **3V3** (NOT 5V) |
 | Touch SIG | — | **D3** (GPIO 21) |
 | Touch GND | — | **GND** |
