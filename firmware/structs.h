@@ -17,6 +17,7 @@ enum ScreenType {
   SCREEN_PC_MONITOR,
   SCREEN_PC_MEDIA,
   SCREEN_BAMBU,
+  SCREEN_BATTERY,
   NUM_SCREENS
 };
 
@@ -31,7 +32,8 @@ inline constexpr const char* SCREEN_NAMES[] = {
   "Currency Exchange",
   "PC Monitor",
   "PC Media",
-  "Printer Info"
+  "Printer Info",
+  "Battery"
 };
 
 enum AnimType {
@@ -81,7 +83,7 @@ struct Config {
   // Screens Settings
   bool screen_auto_cycle = true;
   int screen_interval_sec = 15;
-  int screen_order[NUM_SCREENS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  int screen_order[NUM_SCREENS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
   bool show_time = true;
   bool show_calendar = true;
@@ -94,6 +96,7 @@ struct Config {
   bool show_pc = true;
   bool show_media = true;
   bool show_bambu = true;
+  bool show_battery = true;
 
   bool hide_empty_pc = true;
   bool hide_empty_media = true;
@@ -458,6 +461,14 @@ inline constexpr CurrencyOption allCurrencies[] = {
   {"zwl", "Zimbabwean Dollar"}
 };
 
+struct BatteryData {
+  // Latest reading from the BAT pad via ADC + 1:2 voltage divider
+  float voltage = 0.0;            // Volts at the BAT pad (raw, no compensation)
+  int   percent = -1;            // -1 = unknown / no battery, else 0..100
+  bool  charging = false;         // USB plugged in, red LED on
+  unsigned long last_update = 0;
+};
+
 struct AppState {
   Config config;
   CalendarData calendar;
@@ -470,5 +481,6 @@ struct AppState {
   PcStats pc;
   PcMedia media;
   BambuData bambu;
+  BatteryData battery;
 };
 #endif

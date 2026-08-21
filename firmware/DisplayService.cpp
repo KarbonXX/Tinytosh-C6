@@ -1,6 +1,7 @@
 #include "DisplayService.h"
 #include "DaylightService.h"
 #include "WeatherService.h"
+#include "BatteryService.h"
 #include "images.h"
 #include <Arduino.h>
 #include <Fonts/Picopixel.h>
@@ -624,6 +625,71 @@ void DisplayService::drawDaylightScreen(const Config& config, const DaylightData
     display.print(timeLeftStr);
 }
 
+void DisplayService::drawBatteryScreen(const Config& config, const BatteryData& data) {
+    display.clearDisplay();
+    display.setTextWrap(false);
+
+    int16_t  x1, y1;
+    uint16_t w, h;
+
+    // Header
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.print(F("Battery"));
+
+    // Time on the right (matches other screens)
+    String now = TimeService::getCurrentTimeShort(config.time_format);
+    display.getTextBounds(now.c_str(), 0, 0, &x1, &y1, &w, &h);
+    display.setCursor(128 - w, 0);
+    display.print(now);
+
+    // ── Big battery icon ───────────────────────────────────────────────
+    // Body of the battery: 64×24 rectangle, terminal nub on the right.
+    const int batX = 32;
+    const int batY = 16;
+    const int batW = 64;
+    const int batH = 24;
+    const int nubW = 4;
+
+    // Outer outline
+    display.drawRect(batX, batY, batW, batH, SSD1306_WHITE);
+    display.fillRect(batX + batW, batY + (batH / 2) - 3, 3, 6, SSD1306_WHITE);  // nub
+
+    // Fill bar — width proportional to percentage, with 2px inset on all sides
+    if (data.percent >= 0 && data.percent <= 100) {
+        int innerW = batW - 4;
+        int fillW = (innerW * data.percent) / 100;
+        display.fillRect(batX + 2, batY + 2, fillW, batH - 4, SSD1306_WHITE);
+    }
+
+    // Percentage text — centered under the battery icon, big enough to read
+    display.setTextSize(2);
+    String pctStr;
+    if (data.percent < 0) {
+        pctStr = "--";
+    } else {
+        pctStr = String(data.percent) + "%";
+    }
+    display.getTextBounds(pctStr.c_str(), 0, 0, &x1, &y1, &w, &h);
+    display.setCursor((128 - w) / 2, 44);
+    display.print(pctStr);
+
+    // ── Status line ───────────────────────────────────────────────────
+    display.setTextSize(1);
+    String statusLine;
+    if (!BatteryService::hasBattery(data)) {
+        statusLine = "No battery detected";
+    } else if (data.charging) {
+        statusLine = "Charging (USB)";
+    } else {
+        statusLine = String(data.voltage, 2) + "V";
+    }
+    display.getTextBounds(statusLine.c_str(), 0, 0, &x1, &y1, &w, &h);
+    display.setCursor((128 - w) / 2, 56);
+    display.print(statusLine);
+}
+
 void DisplayService::drawCryptoScreen(const Config& config, const CryptoData& data) {
     display.clearDisplay();
 
@@ -1163,6 +1229,7 @@ bool DisplayService::isScreenEnabled(const AppState& state, int screenIndex) {
             }
             return true;
         }
+        case SCREEN_BATTERY: return config.show_battery;
         default: return false;
     }
 }
@@ -1180,6 +1247,7 @@ void DisplayService::drawScreen(int screenIndex, const AppState& state, int subI
     case SCREEN_PC_MONITOR: drawPcScreen(state.pc); break;
     case SCREEN_PC_MEDIA: drawMediaScreen(state.media); break;
     case SCREEN_BAMBU: drawBambuScreen(state.bambu); break;
+    case SCREEN_BATTERY: drawBatteryScreen(state.config, state.battery); break;
   }
 }
 

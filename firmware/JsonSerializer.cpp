@@ -78,6 +78,7 @@ void JsonSerializer::populateConfigDoc(const Config& config, DynamicJsonDocument
     for(int i=0; i<config.currency_count; i++) cmArr.add(config.currency_multipliers[i]);
 
     doc["show_bambu"] = config.show_bambu ? 1 : 0;
+    doc["show_battery"] = config.show_battery ? 1 : 0;
     doc["bambu_ip"] = config.bambu_ip;
     doc["bambu_sn"] = config.bambu_sn;
     doc["bambu_code"] = config.bambu_code;
@@ -194,6 +195,14 @@ String JsonSerializer::buildAppStateJson(const AppState& state) {
         doc["bambu_bed_target"] = String(state.bambu.bed_target, 1);
         doc["bambu_fan_part"] = state.bambu.fan_part;
         doc["bambu_fan_aux"] = state.bambu.fan_aux;
+    }
+
+    // Battery snapshot (live, not persisted in config)
+    if (state.battery.last_update > 0) {
+        doc["battery_voltage"] = String(state.battery.voltage, 2);
+        doc["battery_percent"] = state.battery.percent;
+        doc["battery_charging"] = state.battery.charging ? 1 : 0;
+        doc["battery_age_ms"] = millis() - state.battery.last_update;
     }
 
     String activeId = state.config.active_pc_id;
@@ -313,6 +322,7 @@ bool JsonSerializer::parseConfig(const char* jsonString, AppState& state) {
     if (doc.containsKey("show_media")) config.show_media = doc["show_media"] == 1;
 
     if (doc.containsKey("show_bambu")) config.show_bambu = doc["show_bambu"] == 1;
+    if (doc.containsKey("show_battery")) config.show_battery = doc["show_battery"] == 1;
     if (doc.containsKey("bambu_ip")) config.bambu_ip = doc["bambu_ip"].as<String>();
     if (doc.containsKey("bambu_sn")) config.bambu_sn = doc["bambu_sn"].as<String>();
     if (doc.containsKey("bambu_code")) config.bambu_code = doc["bambu_code"].as<String>();

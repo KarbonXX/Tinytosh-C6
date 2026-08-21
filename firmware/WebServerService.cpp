@@ -1,6 +1,7 @@
 #include "WebServerService.h"
 #include "BoardConfig.h"
 #include "DaylightService.h"
+#include "BatteryService.h"
 #include "TimeService.h"
 #include "WeatherService.h"
 #include "JsonSerializer.h"
@@ -316,6 +317,7 @@ void WebServerService::handleRoot() {
       case SCREEN_PC_MONITOR: targetId = "showPc"; break;
       case SCREEN_PC_MEDIA: targetId = "showMedia"; break;
       case SCREEN_BAMBU: targetId = "showBambu"; break;
+      case SCREEN_BATTERY: targetId = "showBattery"; break;
     }
     
     add("<li class='sortable-item' data-id='" + String(screenId) + "' data-target='" + targetId + "' draggable='true'>");
@@ -572,6 +574,39 @@ void WebServerService::handleRoot() {
               add("</div></div>");
               break;
           }
+
+          case SCREEN_BATTERY: {
+              add("<div class='panel' id='panel-" + String(screenId) + "'>");
+              add("<label class='checkbox-label mt-0'><input type='checkbox' id='showBattery' name='show_battery' value='1' " + String(config.show_battery ? "checked" : "") + "> Battery Screen</label>");
+              add("<div id='batteryContent' class='collapsible'>");
+
+              // Live snapshot (only if a reading exists yet)
+              String pctStr = "--";
+              String voltStr = "--";
+              String statusStr = "Waiting for first reading…";
+              if (state && state->battery.last_update > 0) {
+                  if (state->battery.percent >= 0) pctStr = String(state->battery.percent) + "%";
+                  voltStr = String(state->battery.voltage, 2) + "V";
+                  if (!BatteryService::hasBattery(state->battery)) {
+                      statusStr = "No battery detected";
+                  } else if (state->battery.charging) {
+                      statusStr = "Charging via USB";
+                  } else {
+                      statusStr = "On battery";
+                  }
+              }
+
+              add("<div class='dashboard-grid'>");
+              add("<div class='tile'><div class='tile-icon'>🔋</div><div class='tile-value' id='bat-percent'>" + pctStr + "</div><div class='tile-label'>Charge</div></div>");
+              add("<div class='tile'><div class='tile-icon'>⚡</div><div class='tile-value' id='bat-voltage'>" + voltStr + "</div><div class='tile-label'>Voltage</div></div>");
+              add("<div class='tile'><div class='tile-icon'>🔌</div><div class='tile-value' id='bat-status' style='font-size:1.2rem'>" + statusStr + "</div><div class='tile-label'>Status</div></div>");
+              add("</div>");
+
+              add("<p class='help-text mt-0'>Reads the BAT pad via A0 with a 1:2 voltage divider (200kΩ resistor between BAT+ and A0/GPIO0). Refreshes every 5 seconds.</p>");
+              add("<p class='help-text mt-0'>⚠ The XIAO ESP32-C6 has no on-board over-discharge protection. Use a LiPo cell with its own BMS, or wire an external TP4056 + protection circuit.</p>");
+              add("</div></div>");
+              break;
+          }
       }
   }
 
@@ -586,7 +621,7 @@ void WebServerService::handleRoot() {
   add("let formDirty = false;");
   
   add("function updateVisibility(){");
-  add("  var pairs = [['autoDetect','manualFields',true], ['nightMode','nightFields',false], ['showTime', 'timeContent',false], ['showCalendar', 'calendarContent',false], ['showWeather','weatherContent',false], ['showDaylight','daylightContent',false], ['showPc','pcContent',false], ['showCrypto','cryptoContent',false], ['showCurrency','currencyContent',false], ['showStock','stockContent',false], ['showAQI','aqiContent',false], ['showMedia','mediaContent',false], ['showBambu','bambuContent',false]];");  
+  add("  var pairs = [['autoDetect','manualFields',true], ['nightMode','nightFields',false], ['showTime', 'timeContent',false], ['showCalendar', 'calendarContent',false], ['showWeather','weatherContent',false], ['showDaylight','daylightContent',false], ['showPc','pcContent',false], ['showCrypto','cryptoContent',false], ['showCurrency','currencyContent',false], ['showStock','stockContent',false], ['showAQI','aqiContent',false], ['showMedia','mediaContent',false], ['showBambu','bambuContent',false], ['showBattery','batteryContent',false]];");  
   add("  pairs.forEach(p => {");
   add("    var ch = document.getElementById(p[0]); if(!ch) return;");
   add("    var target = document.getElementById(p[1]);");
@@ -638,7 +673,7 @@ void WebServerService::handleRoot() {
   }
   add("div.innerHTML = `<div class='input-wrapper'><label class='mt-0'>Base:</label><select name='currency_bases[]'>${cOpts}</select></div><div class='input-wrapper'><label class='mt-0'>Target:</label><select name='currency_targets[]'>${cOpts}</select></div><div class='input-wrapper'><label class='mt-0'>Mult:</label><select name='currency_multipliers[]'><option value='1'>1</option><option value='10'>10</option><option value='100'>100</option><option value='1000'>1000</option></select></div><button type='button' class='btn-remove' onclick=\"removeRow(this, 'currency-list-container')\">-</button>`; container.appendChild(div); if (bVal) div.querySelector(\"select[name='currency_bases[]']\").value = bVal; if (tVal) div.querySelector(\"select[name='currency_targets[]']\").value = tVal; if (mVal) div.querySelector(\"select[name='currency_multipliers[]']\").value = mVal; formDirty = true; updateRowControls('currency-list-container', 5); };");
 
-  add("['autoDetect', 'nightMode', 'showTime', 'showCalendar', 'showWeather', 'showDaylight', 'showPc', 'showCrypto', 'showCurrency', 'showStock', 'showAQI', 'showMedia', 'showBambu', 'autoCycle'].forEach(id => { var el=document.getElementById(id); if(el) el.addEventListener('change', updateVisibility); });");
+  add("['autoDetect', 'nightMode', 'showTime', 'showCalendar', 'showWeather', 'showDaylight', 'showPc', 'showCrypto', 'showCurrency', 'showStock', 'showAQI', 'showMedia', 'showBambu', 'showBattery', 'autoCycle'].forEach(id => { var el=document.getElementById(id); if(el) el.addEventListener('change', updateVisibility); });");
   add("updateVisibility();");
 
   add("const countryGreetings = {");
@@ -732,7 +767,7 @@ void WebServerService::handleRoot() {
   add("  reorderPhysicalPanels(orderInput.value);");
   add("}");
 
-  add("const panelCheckboxes = ['showTime', 'showCalendar', 'showWeather', 'showAQI', 'showDaylight', 'showCrypto', 'showCurrency', 'showStock', 'showPc', 'showMedia', 'showBambu'];");
+  add("const panelCheckboxes = ['showTime', 'showCalendar', 'showWeather', 'showAQI', 'showDaylight', 'showCrypto', 'showCurrency', 'showStock', 'showPc', 'showMedia', 'showBambu', 'showBattery'];");
   add("panelCheckboxes.forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('change', syncScreenOrder); });");
 
   add("function getDragAfterEl(y) {");
@@ -896,6 +931,7 @@ void WebServerService::handleRoot() {
   add("    setCb('showMedia', d.show_media);");
 
   add("    setCb('showBambu', d.show_bambu);");
+  add("    setCb('showBattery', d.show_battery);");
   add("    setVal('bambu_ip', d.bambu_ip);");
   add("    setVal('bambu_sn', d.bambu_sn);");
   add("    setVal('bambu_code', d.bambu_code);");

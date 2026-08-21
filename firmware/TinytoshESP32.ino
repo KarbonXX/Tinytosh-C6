@@ -24,6 +24,7 @@ Preferences g_wifi_prefs;
 #include "StockService.h"
 #include "PcMonitorService.h"
 #include "BambuService.h"
+#include "BatteryService.h"
 
 // Global Constants
 const char* AP_SSID = "Tinytosh";
@@ -69,6 +70,7 @@ CurrencyService currencyService;
 StockService stockService;
 PcMonitorService pcMonitorService;
 BambuService bambuService;
+BatteryService batteryService;
 
 unsigned long lastScreenSwitch = 0;
 int currentScreen = 0;
@@ -437,6 +439,9 @@ void setup() {
   displayService.showOLEDStatus({"\n", "\n", "Starting...", "\n", "\n", "Config Loaded!"}, true);
   bambuService.begin(&appState.config, &appState.bambu);
 
+  // Initial battery reading so the Battery screen has data on first paint.
+  batteryService.update(appState.battery);
+
   WiFiManager wm;
   wm.setConnectTimeout(15);
   wm.setConnectRetries(3);
@@ -530,6 +535,14 @@ void loop() {
   webServerService.handleClient();
   bambuService.loop();
   button.tick();
+
+  // Refresh battery voltage every ~5 seconds while the screen is on.
+  // Cheap (16 ADC reads ≈ 5 ms), no WiFi, can run in the main loop.
+  static unsigned long lastBatteryUpdate = 0;
+  if (millis() - lastBatteryUpdate > 5000) {
+    batteryService.update(appState.battery);
+    lastBatteryUpdate = millis();
+  }
 
   if (pcMonitorService.handleSerial(appState)) {
     Serial.println("Config updated via USB! Saving and applying...");

@@ -16,6 +16,7 @@ guide covers the changes needed for the C6 variant.
 | **Board** | ESP32-C3 SuperMini | Seeed XIAO ESP32-C6 |
 | **Default I²C** | SDA = GPIO 8, SCL = GPIO 9 | SDA = D9 (GPIO 20), SCL = D10 (GPIO 18) |
 | **Default touch** | GPIO 10 | D3 (GPIO 21) |
+| **Battery readout** | not supported | ✅ Reads BAT pad via ADC (A0/GPIO0 + 1:2 divider) |
 | **GPIO range exposed in web panel** | 0..21 | 0..30, with ⚠️ markers on strapping/flash/USB pins |
 | **USB serial** | Hardware UART over USB-CDC | **USB CDC On Boot must be Enabled** |
 | **Arduino core** | esp32 v2.x or v3.x | **esp32 v3.0.0+** (C6 support was incomplete before) |
@@ -219,6 +220,78 @@ gh repo edit --enable-pages --pages-source-branch feature/xiao-esp32-c6
 
 Then visit `https://karbonxx.github.io/Tinytosh-C6/` and the **Connect & Flash
 XIAO ESP32-C6** button will be live.
+
+---
+
+## Battery screen (XIAO ESP32-C6 only)
+
+The C6 build adds a new "Battery" screen that reads the BAT pad voltage and
+shows it as a percentage + bar icon on the OLED.
+
+### Hardware
+
+Solder a **3.7V LiPo cell** to the BAT+ and BAT- pads on the back of the
+XIAO. Use a cell with **built-in over-discharge protection** — the XIAO
+ESP32-C6's on-board SGM40567-4.2 charge controller does **not** include
+over-discharge protection, and running the cell below 3.0V will damage it
+permanently.
+
+The battery voltage is sampled through a **1:2 voltage divider** (200kΩ resistor
+between BAT+ and A0/D0/GPIO0). This is the standard Seeed XIAO ESP32-C6
+battery-reading mod — the XIAO board's PCB already exposes the divider
+pads. No soldering beyond connecting the LiPo cell itself is required for
+the voltage reading to work.
+
+### What you see on the OLED
+
+```
+   9:41
+┌────────────────────┐
+│                    │
+│   ┌─────────┐▌     │
+│   │█████████│▌     │    <- battery icon (filled by %)
+│   └─────────┘▌     │
+│                    │
+│        75%         │    <- percent in big text
+│                    │
+│      3.85V         │    <- voltage or "Charging (USB)" or "No battery detected"
+└────────────────────┘
+```
+
+### Web panel
+
+Visit `http://<tinytosh-ip>/` and you'll see a new **Battery** panel with:
+
+- Live charge %, voltage, and status (Charging via USB / On battery / No battery detected)
+- A "Battery Screen" checkbox to add/remove it from the rotation
+- Drag-to-reorder handle so you can position it anywhere in the cycle
+
+### Battery display math
+
+The firmware maps raw voltage to a 0–100% using a piecewise LiPo discharge
+curve:
+
+| Voltage | Percent |
+|---|---|
+| ≥ 4.20V | 100% |
+| 3.85V | 75% |
+| 3.70V | 50% |
+| 3.55V | 25% |
+| 3.30V | 5% |
+| < 3.30V | 0% |
+
+Voltage refreshes every 5 seconds in the main loop. Charging is detected
+heuristically when BAT ≥ 4.15V (the SGM40567 holds the cell at the
+constant-voltage phase).
+
+### Caveats
+
+- **No on-board over-discharge protection** — see warning above. Battery
+  percentage assumes a healthy LiPo; if you swap cells or your cell ages,
+  recheck the voltage against a multimeter.
+- The "charging" heuristic can't tell 100% charged from "charger
+  disconnected with a full cell" if BAT stays above 4.15V. Both look
+  identical to the firmware.
 
 ---
 
